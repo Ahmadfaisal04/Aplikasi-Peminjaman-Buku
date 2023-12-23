@@ -120,13 +120,11 @@
                 <label for="namaDepan">Nama Depan:</label>
                 <input type="text" id="namaDepan" name="namaDepan" required>
             </div>
-
             <div>
                 <label for="namaBelakang">Nama Belakang:</label>
                 <input type="text" id="namaBelakang" name="namaBelakang" required>
             </div>
         </div>
-
         <label for="nomorKartu">Nomor Kartu:</label>
         <input type="text" id="nomorKartu" name="nomorKartu" required>
 
@@ -148,7 +146,7 @@
         <label for="tanggalDikembalikan">Tanggal Dikembalikan:</label>
         <input type="date" id="tanggalDikembalikan" name="tanggalDikembalikan" required>
 
-        <input type="button" value="Pinjam Buku" onclick="tambahBaris()">
+        <input type="button" value="Pinjam Buku" onclick="peminjamanManager.tambahBaris()">
     </form>
 
     <div id="divHasil">
@@ -175,97 +173,114 @@
     </div>
 
     <script>
-        function tambahBaris() {
-            var data = [
-                "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
-                "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
-            ];
-
-            var hasil = document.getElementById("bodyTabel");
-            var baris = hasil.insertRow();
-
-            for (var i = 0; i < data.length; i++) {
-                var sel = baris.insertCell(i);
-                sel.innerHTML = document.getElementById(data[i]).value;
+        class PeminjamanManager {
+            constructor() {
+                this.tableBodyId = "bodyTabel";
             }
 
-            var totalDenda = hitungDenda(
-                document.getElementById("tanggalPengembalian").value,
-                document.getElementById("tanggalDikembalikan").value
-            );
+            tambahBaris() {
+                const data = [
+                    "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
+                    "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
+                ];
 
-            baris.insertCell(data.length).innerHTML = totalDenda;
-            baris.insertCell(data.length + 1).innerHTML = "<button class='edit-button' onclick='editBaris(this)'>Edit</button>";
-            baris.insertCell(data.length + 2).innerHTML = "<button class='hapus-button' onclick='hapusBaris(this)'>Hapus</button>";
+                const hasil = document.getElementById(this.tableBodyId);
+                const peminjaman = new Peminjaman();
 
-            document.getElementById("formPeminjaman").reset();
-        }
+                peminjaman.renderRow(data, hasil);
 
-        function hitungDenda(tanggalPengembalian, tanggalDikembalikan) {
-            var satuHari = 24 * 60 * 60 * 1000; // jam * menit * detik * milidetik
-            var tanggalPengembalianObj = new Date(tanggalPengembalian);
-            var tanggalDikembalikanObj = new Date(tanggalDikembalikan);
-            var selisihHari = Math.round(Math.abs((tanggalPengembalianObj - tanggalDikembalikanObj) / satuHari));
-
-            return (tanggalDikembalikanObj > tanggalPengembalianObj) ? selisihHari * 25000 : 0;
-        }
-
-        function editBaris(tombol) {
-            var baris = tombol.parentNode.parentNode;
-            var sel = baris.cells;
-
-            var data = [
-                "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
-                "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
-            ];
-
-            // Mengisi formulir dengan data dari baris yang dipilih
-            for (var i = 0; i < data.length; i++) {
-                document.getElementById(data[i]).value = sel[i].innerHTML;
+                document.getElementById("formPeminjaman").reset();
             }
 
-            // Mengubah fungsi tombol "Pinjam Buku" menjadi "Simpan Perubahan"
-            var tombolPinjam = document.getElementById("formPeminjaman").getElementsByTagName("input")[8];
-            tombolPinjam.value = "Simpan Perubahan";
-            tombolPinjam.classList.add("edit-button"); // Add the "edit-button" class
-            tombolPinjam.onclick = function () {
-                simpanPerubahan(baris);
-            };
-        }
+            editBaris(tombol) {
+                const baris = tombol.parentNode.parentNode;
+                const sel = baris.cells;
 
-        function simpanPerubahan(baris) {
-            var data = [
-                "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
-                "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
-            ];
+                const data = [
+                    "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
+                    "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
+                ];
 
-            for (var i = 0; i < data.length; i++) {
-                baris.cells[i].innerHTML = document.getElementById(data[i]).value;
+                // Mengisi formulir dengan data dari baris yang dipilih
+                for (let i = 0; i < data.length; i++) {
+                    document.getElementById(data[i]).value = sel[i].innerHTML;
+                }
+
+                // Mengubah fungsi tombol "Pinjam Buku" menjadi "Simpan Perubahan"
+                const tombolPinjam = document.getElementById("formPeminjaman").getElementsByTagName("input")[8];
+                tombolPinjam.value = "Simpan Perubahan";
+                tombolPinjam.classList.add("edit-button");
+                tombolPinjam.onclick = function () {
+                    peminjamanManager.simpanPerubahan(baris);
+                };
             }
 
-            var totalDenda = hitungDenda(
-                document.getElementById("tanggalPengembalian").value,
-                document.getElementById("tanggalDikembalikan").value
-            );
+            simpanPerubahan(baris) {
+                const data = [
+                    "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
+                    "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
+                ];
 
-            baris.cells[data.length].innerHTML = totalDenda;
+                for (let i = 0; i < data.length; i++) {
+                    baris.cells[i].innerHTML = document.getElementById(data[i]).value;
+                }
 
-            // Mengembalikan fungsi tombol "Pinjam Buku" menjadi tambahBaris()
-            var tombolPinjam = document.getElementById("formPeminjaman").getElementsByTagName("input")[8];
-            tombolPinjam.value = "Pinjam Buku";
-            tombolPinjam.classList.remove("edit-button");
-            
-            tombolPinjam.onclick = tambahBaris;
+                const totalDenda = Peminjaman.hitungDenda(
+                    document.getElementById("tanggalPengembalian").value,
+                    document.getElementById("tanggalDikembalikan").value
+                );
 
-            document.getElementById("formPeminjaman").reset();
+                baris.cells[data.length].innerHTML = totalDenda;
+
+                // Mengembalikan fungsi tombol "Pinjam Buku" menjadi tambahBaris()
+                const tombolPinjam = document.getElementById("formPeminjaman").getElementsByTagName("input")[8];
+                tombolPinjam.value = "Pinjam Buku";
+                tombolPinjam.classList.remove("edit-button");
+
+                tombolPinjam.onclick = function () {
+                    peminjamanManager.tambahBaris();
+                };
+
+                document.getElementById("formPeminjaman").reset();
+            }
+
+            hapusBaris(tombol) {
+                const baris = tombol.parentNode.parentNode;
+                baris.parentNode.removeChild(baris);
+            }
         }
 
-        function hapusBaris(tombol) {
-            var baris = tombol.parentNode.parentNode;
-            baris.parentNode.removeChild(baris);
+        class Peminjaman {
+            renderRow(data, hasil) {
+                const baris = hasil.insertRow();
+
+                for (let i = 0; i < data.length; i++) {
+                    const sel = baris.insertCell(i);
+                    sel.innerHTML = document.getElementById(data[i]).value;
+                }
+
+                const totalDenda = Peminjaman.hitungDenda(
+                    document.getElementById("tanggalPengembalian").value,
+                    document.getElementById("tanggalDikembalikan").value
+                );
+
+                baris.insertCell(data.length).innerHTML = totalDenda;
+                baris.insertCell(data.length + 1).innerHTML = "<button class='edit-button' onclick='peminjamanManager.editBaris(this)'>Edit</button>";
+                baris.insertCell(data.length + 2).innerHTML = "<button class='hapus-button' onclick='peminjamanManager.hapusBaris(this)'>Hapus</button>";
+            }
+
+            static hitungDenda(tanggalPengembalian, tanggalDikembalikan) {
+                const satuHari = 24 * 60 * 60 * 1000;
+                const tanggalPengembalianObj = new Date(tanggalPengembalian);
+                const tanggalDikembalikanObj = new Date(tanggalDikembalikan);
+                const selisihHari = Math.round(Math.abs((tanggalPengembalianObj - tanggalDikembalikanObj) / satuHari));
+
+                return (tanggalDikembalikanObj > tanggalPengembalianObj) ? selisihHari * 25000 : 0;
+            }
         }
+
+        const peminjamanManager = new PeminjamanManager();
     </script>
 
 </body>
-
 </html>
