@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 2 Aplikasi Peminjaman Buku</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 10px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        form {
+            max-width: 600px;
+            width: 100%;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .form-group div {
+            width: 48%;
+            margin-bottom: 16px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 5px;
+        }
+
+        input[type="button"],
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .edit-button {
+            background-color: #2ecc71; 
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .hapus-button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Formulir Peminjaman Buku</h2>
+
+    <form id="formPeminjaman">
+        <div class="form-group">
+            <div>
+                <label for="namaDepan">Nama Depan:</label>
+                <input type="text" id="namaDepan" name="namaDepan" required>
+            </div>
+
+            <div>
+                <label for="namaBelakang">Nama Belakang:</label>
+                <input type="text" id="namaBelakang" name="namaBelakang" required>
+            </div>
+        </div>
+
+        <label for="nomorKartu">Nomor Kartu:</label>
+        <input type="text" id="nomorKartu" name="nomorKartu" required>
+
+        <label for="alamat">Alamat:</label>
+        <textarea id="alamat" name="alamat" required></textarea>
+
+        <label for="nomorTelepon">Nomor Telepon:</label>
+        <input type="tel" id="nomorTelepon" name="nomorTelepon" required>
+
+        <label for="bukuPinjaman">Buku Pinjaman:</label>
+        <input type="text" id="bukuPinjaman" name="bukuPinjaman" required>
+
+        <label for="tanggalPeminjaman">Tanggal Peminjaman:</label>
+        <input type="date" id="tanggalPeminjaman" name="tanggalPeminjaman" required>
+
+        <label for="tanggalPengembalian">Tanggal Pengembalian:</label>
+        <input type="date" id="tanggalPengembalian" name="tanggalPengembalian" required>
+
+        <label for="tanggalDikembalikan">Tanggal Dikembalikan:</label>
+        <input type="date" id="tanggalDikembalikan" name="tanggalDikembalikan" required>
+
+        <input type="button" value="Pinjam Buku" onclick="tambahBaris()">
+    </form>
+
+    <div id="divHasil">
+        <h2>Data Peminjaman Buku</h2>
+        <table id="tabelHasil">
+            <thead>
+                <tr>
+                    <th>Nama Depan</th>
+                    <th>Nama Belakang</th>
+                    <th>Nomor Kartu</th>
+                    <th>Alamat</th>
+                    <th>Nomor Telepon</th>
+                    <th>Buku Pinjaman</th>
+                    <th>Tanggal Peminjaman</th>
+                    <th>Tanggal Pengembalian</th>
+                    <th>Tanggal Dikembalikan</th>
+                    <th>Total Denda</th>
+                    <th>Edit</th>
+                    <th>Hapus</th>
+                </tr>
+            </thead>
+            <tbody id="bodyTabel"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function tambahBaris() {
+            var data = [
+                "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
+                "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
+            ];
+
+            var hasil = document.getElementById("bodyTabel");
+            var baris = hasil.insertRow();
+
+            for (var i = 0; i < data.length; i++) {
+                var sel = baris.insertCell(i);
+                sel.innerHTML = document.getElementById(data[i]).value;
+            }
+
+            var totalDenda = hitungDenda(
+                document.getElementById("tanggalPengembalian").value,
+                document.getElementById("tanggalDikembalikan").value
+            );
+
+            baris.insertCell(data.length).innerHTML = totalDenda;
+            baris.insertCell(data.length + 1).innerHTML = "<button class='edit-button' onclick='editBaris(this)'>Edit</button>";
+            baris.insertCell(data.length + 2).innerHTML = "<button class='hapus-button' onclick='hapusBaris(this)'>Hapus</button>";
+
+            document.getElementById("formPeminjaman").reset();
+        }
+
+        function hitungDenda(tanggalPengembalian, tanggalDikembalikan) {
+            var satuHari = 24 * 60 * 60 * 1000; // jam * menit * detik * milidetik
+            var tanggalPengembalianObj = new Date(tanggalPengembalian);
+            var tanggalDikembalikanObj = new Date(tanggalDikembalikan);
+            var selisihHari = Math.round(Math.abs((tanggalPengembalianObj - tanggalDikembalikanObj) / satuHari));
+
+            return (tanggalDikembalikanObj > tanggalPengembalianObj) ? selisihHari * 25000 : 0;
+        }
+
+        function editBaris(tombol) {
+            var baris = tombol.parentNode.parentNode;
+            var sel = baris.cells;
+
+            var data = [
+                "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
+                "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
+            ];
+
+            // Mengisi formulir dengan data dari baris yang dipilih
+            for (var i = 0; i < data.length; i++) {
+                document.getElementById(data[i]).value = sel[i].innerHTML;
+            }
+
+            // Mengubah fungsi tombol "Pinjam Buku" menjadi "Simpan Perubahan"
+            var tombolPinjam = document.getElementById("formPeminjaman").getElementsByTagName("input")[8];
+            tombolPinjam.value = "Simpan Perubahan";
+            tombolPinjam.classList.add("edit-button"); // Add the "edit-button" class
+            tombolPinjam.onclick = function () {
+                simpanPerubahan(baris);
+            };
+        }
+
+        function simpanPerubahan(baris) {
+            var data = [
+                "namaDepan", "namaBelakang", "nomorKartu", "alamat", "nomorTelepon",
+                "bukuPinjaman", "tanggalPeminjaman", "tanggalPengembalian", "tanggalDikembalikan"
+            ];
+
+            for (var i = 0; i < data.length; i++) {
+                baris.cells[i].innerHTML = document.getElementById(data[i]).value;
+            }
+
+            var totalDenda = hitungDenda(
+                document.getElementById("tanggalPengembalian").value,
+                document.getElementById("tanggalDikembalikan").value
+            );
+
+            baris.cells[data.length].innerHTML = totalDenda;
+
+            // Mengembalikan fungsi tombol "Pinjam Buku" menjadi tambahBaris()
+            var tombolPinjam = document.getElementById("formPeminjaman").getElementsByTagName("input")[8];
+            tombolPinjam.value = "Pinjam Buku";
+            tombolPinjam.classList.remove("edit-button");
+            
+            tombolPinjam.onclick = tambahBaris;
+
+            document.getElementById("formPeminjaman").reset();
+        }
+
+        function hapusBaris(tombol) {
+            var baris = tombol.parentNode.parentNode;
+            baris.parentNode.removeChild(baris);
+        }
+    </script>
+
+</body>
+
+</html>
