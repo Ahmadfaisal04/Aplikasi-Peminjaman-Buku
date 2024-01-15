@@ -164,8 +164,8 @@
                     <th>Tanggal Pengembalian</th>
                     <th>Tanggal Dikembalikan</th>
                     <th>Total Denda</th>
-<!--                     <th>Edit</th>
-                    <th>Hapus</th> -->
+                    <th>Edit</th>
+                    <th>Hapus</th>
                 </tr>
             </thead>
             <tbody id="bodyTabel"></tbody>
@@ -265,8 +265,8 @@
                 );
 
                 baris.insertCell(data.length).innerHTML = totalDenda;
-                // baris.insertCell(data.length + 1).innerHTML = "<button class='edit-button' onclick='peminjamanManager.editBaris(this)'>Edit</button>";
-                // baris.insertCell(data.length + 2).innerHTML = "<button class='hapus-button' onclick='peminjamanManager.hapusBaris(this)'>Hapus</button>";
+                baris.insertCell(data.length + 1).innerHTML = "<button class='edit-button' onclick='peminjamanManager.editBaris(this)'>Edit</button>";
+                baris.insertCell(data.length + 2).innerHTML = "<button class='hapus-button' onclick='peminjamanManager.hapusBaris(this)'>Hapus</button>";
             }
 
             static hitungDenda(tanggalPengembalian, tanggalDikembalikan) {
